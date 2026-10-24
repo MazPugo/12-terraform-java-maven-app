@@ -1,5 +1,6 @@
 #!/usr/bin/env groovy
-library identifier: 'jenkins-shared-library@master', retriever: modernSCM(
+// FIX: Changed @master to @main to match the GitHub branch name
+library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
     [$class: 'GitSCMSource', remote: 'https://github.com/MazPugo/08-jenkins-shared-library.git', credentialsId: 'github-credentials' ]
 )
 
@@ -41,7 +42,6 @@ pipeline {
                     dir('terraform') {
                         sh "terraform init"
                         sh "terraform apply --auto-approve"
-                        // FIX: Added env. prefix to make the variable globally accessible across stages
                         env.EC2_PUBLIC_IP = sh(
                             script: "terraform output ec2_public_ip", 
                             returnStdout: true
@@ -59,7 +59,6 @@ pipeline {
                     echo "waiting for EC2 server to initialize"
                     sleep(time: 90, unit: "SECONDS")
                     
-                    // FIX: Referenced env.EC2_PUBLIC_IP
                     echo 'deploying docker image to EC2...'
                     echo "${env.EC2_PUBLIC_IP}"
                     
@@ -76,4 +75,3 @@ pipeline {
         }
     }
 }
-
