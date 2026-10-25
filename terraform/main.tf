@@ -1,7 +1,7 @@
 terraform {
-  required_version = ">= 1.17.0" 
+  required_version = ">= 1.17.0"
   backend "s3" {
-    bucket = "myapp-tf-s3-bucket"
+    bucket = "marzena-myapp-tf-bucket" # Make sure you created this bucket in your AWS eu-west-2 console!
     key    = "myapp/state.tfstate"
     region = "eu-west-2"
   }
@@ -23,12 +23,14 @@ resource "aws_subnet" "myapp-subnet-1" {
   cidr_block        = var.subnet_cidr_block
   availability_zone = var.avail_zone
   tags = {
-    Name = "${var.env_prefix}-subnet-1" 
+    Name = "${var.env_prefix}-subnet-1"
+  }
+} # This closing bracket is critical!
 
 resource "aws_internet_gateway" "myapp-igw" {
   vpc_id = aws_vpc.myapp-vpc.id
   tags = {
-    Name = "${var.env_prefix}-igw" 
+    Name = "${var.env_prefix}-igw"
   }
 }
 
@@ -50,14 +52,14 @@ resource "aws_default_security_group" "default-sg" {
   ingress {
     from_port   = 22
     to_port     = 22
-    protocol    = "tcp" 
+    protocol    = "tcp"
     cidr_blocks = [var.my_ip, var.jenkins_ip]
   }
 
   ingress {
     from_port   = 8080
     to_port     = 8080
-    protocol    = "tcp" 
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -69,7 +71,7 @@ resource "aws_default_security_group" "default-sg" {
   }
 
   tags = {
-    Name = "${var.env_prefix}-default-sg" 
+    Name = "${var.env_prefix}-default-sg"
   }
 }
 
@@ -95,16 +97,17 @@ resource "aws_instance" "myapp-server" {
   availability_zone      = var.avail_zone
 
   associate_public_ip_address = true
-  
-  key_name = "myapp-key-pair"
+  key_name                    = "myapp-key-pair"
 
   user_data = file("entry-script.sh")
 
   user_data_replace_on_change = true
 
   tags = {
-    Name = "${var.env_prefix}-server" 
+    Name = "${var.env_prefix}-server"
   }
 }
+
+output "ec2_public_ip" {
   value = aws_instance.myapp-server.public_ip
 }
