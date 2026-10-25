@@ -1,6 +1,7 @@
 provider "aws" {
   region = "eu-west-2"
 }
+
 resource "aws_vpc" "myapp-vpc" {
   cidr_block = var.vpc_cidr_block
   tags = {
@@ -90,7 +91,7 @@ data "aws_ami" "latest-amazon-linux-image" {
 
 resource "aws_key_pair" "ssh-key" {
   key_name   = "${var.env_prefix}-server-key"
-  public_key = file(var.public_key_location)
+  public_key = file("~/.ssh/id_rsa.pub") 
 }
 
 resource "aws_instance" "myapp-server" {
@@ -101,7 +102,7 @@ resource "aws_instance" "myapp-server" {
   availability_zone      = var.avail_zone
 
   associate_public_ip_address = true
-  key_name                    = "myapp-server-key"
+  key_name                    = aws_key_pair.ssh-key.key_name
 
   user_data                   = file("entry-script.sh")
   user_data_replace_on_change = true
