@@ -1,5 +1,3 @@
-#!/usr/bin/env groovy
-// FIX: Changed @master to @main to match the GitHub branch name
 library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
     [$class: 'GitSCMSource', remote: 'https://github.com/MazPugo/08-jenkins-shared-library.git', credentialsId: 'github-credentials' ]
 )
