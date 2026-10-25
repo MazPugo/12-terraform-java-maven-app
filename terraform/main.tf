@@ -1,7 +1,7 @@
 terraform {
   required_version = ">= 1.17.0"
   backend "s3" {
-    bucket = "marzena-myapp-tf-bucket" # Make sure you created this bucket in your AWS eu-west-2 console!
+    bucket = "marzena-myapp-tf-bucket" 
     key    = "myapp/state.tfstate"
     region = "eu-west-2"
   }
